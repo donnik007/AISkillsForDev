@@ -5,7 +5,7 @@ permissions:
   contents: read
   models: read
 
-on:
+#on:
   push:
     branches:
       - main
