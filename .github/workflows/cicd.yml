@@ -90,7 +90,7 @@ jobs:
       - name: Update App Service
         run: |
           az webapp config container set \
-            --name dominik-webapp-t2s-workshop-1 \
-            --resource-group dominiks \
+            --name aiskillsfordev-webapp-01 \
+            --resource-group AISkillsForDev \
             --docker-custom-image-name ${{ secrets.ACR_LOGIN_SERVER }}/example-webapp:latest \
             --docker-registry-server-url https://${{ secrets.ACR_LOGIN_SERVER }}
