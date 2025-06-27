@@ -4,7 +4,7 @@ permissions:
   id-token: write
   contents: read
 
-#on:
+on:
   push:
     branches:
       - main
@@ -36,8 +36,29 @@ jobs:
         run: |
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/example-webapp:latest
 
+      - name: Run Python App and Capture Errors
+        run: |
+          set +e
+          python3 app.py >output.log 2>&1
+          echo $? > exit_code.txt
+          set -e
 
+      - name: Use GitHub Models to Propose Action on Error
+        if: always()
+        uses: github/github-models@v1
+        with:
+          model: github-llama-3-8b-instruct
+          prompt: |
+            The following error was encountered during CI/CD pipeline:
+            ${{ steps.run_python_app.outputs.error_message }}
+            In one sentence, what action should the developer take?
+          input_file: output.log
+        id: ai_suggestion
 
+      - name: Show AI Suggestion
+        if: always()
+        run: |
+          echo "AI Suggestion: ${{ steps.ai_suggestion.outputs.result }}"
 
   deploy-infra:
     name: Deploy Infrastructure
